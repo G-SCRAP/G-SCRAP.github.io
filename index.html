@@ -7,38 +7,38 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 p-6">
-    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold mb-4 text-center">Task Priority Organizer</h1>
+<body class="bg-gray-100 p-4 sm:p-6 min-h-screen">
+    <div class="max-w-5xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-md">
+        <h1 class="text-xl sm:text-2xl font-bold mb-4 text-center">Task Priority Organizer</h1>
 
         <!-- Task Input Form -->
         <div class="mb-6">
-            <h2 class="text-lg font-semibold mb-2">Add New Task</h2>
-            <div class="flex space-x-4">
+            <h2 class="text-base sm:text-lg font-semibold mb-2">Add New Task</h2>
+            <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
                 <input id="taskName" type="text" placeholder="Task Name" class="border p-2 rounded w-full">
-                <select id="importance" class="border p-2 rounded">
+                <select id="importance" class="border p-2 rounded w-full sm:w-auto">
                     <option value="1">Green Flag (Low Importance)</option>
                     <option value="2">Yellow Flag (Medium Importance)</option>
                     <option value="3">Red Flag (High Importance)</option>
                 </select>
-                <select id="urgency" class="border p-2 rounded">
+                <select id="urgency" class="border p-2 rounded w-full sm:w-auto">
                     <option value="1">Green Flag (Low Urgency)</option>
                     <option value="2">Yellow Flag (Medium Urgency)</option>
                     <option value="3">Red Flag (High Urgency)</option>
                 </select>
-                <button onclick="addTask()" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Add Task</button>
+                <button onclick="addTask()" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 w-full sm:w-auto">Add Task</button>
             </div>
         </div>
 
         <!-- Task Table -->
-        <div class="mb-6">
-            <h2 class="text-lg font-semibold mb-2">Tasks</h2>
-            <table class="w-full border-collapse border">
+        <div class="mb-6 overflow-x-auto">
+            <h2 class="text-base sm:text-lg font-semibold mb-2">Tasks</h2>
+            <table class="w-full border-collapse border min-w-[300px]">
                 <thead>
                     <tr class="bg-gray-200">
-                        <th class="border p-2">Task Name</th>
-                        <th class="border p-2">Importance</th>
-                        <th class="border p-2">Urgency</th>
+                        <th class="border p-2 text-sm sm:text-base">Task Name</th>
+                        <th class="border p-2 text-sm sm:text-base">Importance</th>
+                        <th class="border p-2 text-sm sm:text-base">Urgency</th>
                     </tr>
                 </thead>
                 <tbody id="taskTableBody"></tbody>
@@ -47,8 +47,10 @@
 
         <!-- Chart -->
         <div>
-            <h2 class="text-lg font-semibold mb-2">Task Priority Graph</h2>
-            <canvas id="taskChart" class="w-full h-96"></canvas>
+            <h2 class="text-base sm:text-lg font-semibold mb-2">Task Priority Graph</h2>
+            <div class="relative w-full h-64 sm:h-80 lg:h-96">
+                <canvas id="taskChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -71,6 +73,8 @@
                     }]
                 },
                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         x: {
                             title: { display: true, text: 'Urgency' },
@@ -137,9 +141,9 @@
             tasks.forEach(task => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="border p-2">${task.name}</td>
-                    <td class="border p-2 ${task.importanceLabel.toLowerCase()}">${task.importanceLabel}</td>
-                    <td class="border p-2 ${task.urgencyLabel.toLowerCase()}">${task.urgencyLabel}</td>
+                    <td class="border p-2 text-sm sm:text-base">${task.name}</td>
+                    <td class="border p-2 ${task.importanceLabel.toLowerCase()} text-sm sm:text-base">${task.importanceLabel}</td>
+                    <td class="border p-2 ${task.urgencyLabel.toLowerCase()} text-sm sm:text-base">${task.urgencyLabel}</td>
                 `;
                 tableBody.appendChild(row);
             });
