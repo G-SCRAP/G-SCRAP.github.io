@@ -6,6 +6,7 @@
     <title>Task Priority Organizer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 </head>
 <body class="bg-gray-100 p-4 sm:p-6 min-h-screen">
     <div class="max-w-5xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-md">
@@ -61,6 +62,7 @@
         // Initialize Chart.js
         function initChart() {
             const ctx = document.getElementById('taskChart').getContext('2d');
+            Chart.register(ChartDataLabels);
             chart = new Chart(ctx, {
                 type: 'scatter',
                 data: {
@@ -69,7 +71,8 @@
                         data: [],
                         backgroundColor: 'rgba(75, 192, 192, 0.6)',
                         borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        pointRadius: 5
                     }]
                 },
                 options: {
@@ -100,6 +103,19 @@
                         }
                     },
                     plugins: {
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: function(value, context) {
+                                return tasks[context.dataIndex].name;
+                            },
+                            font: {
+                                size: 10,
+                                weight: 'bold'
+                            },
+                            color: '#000',
+                            offset: 4
+                        },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
@@ -172,4 +188,4 @@
         initChart();
     </script>
 </body>
-</html>
+</html> 
