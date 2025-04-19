@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Priority Organizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4 text-center">Task Priority Organizer</h1>
+
+        <!-- Task Input Form -->
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold mb-2">Add New Task</h2>
+            <div class="flex space-x-4">
+                <input id="taskName" type="text" placeholder="Task Name" class="border p-2 rounded w-full">
+                <select id="importance" class="border p-2 rounded">
+                    <option value="1">Green Flag (Low Importance)</option>
+                    <option value="2">Yellow Flag (Medium Importance)</option>
+                    <option value="3">Red Flag (High Importance)</option>
+                </select>
+                <select id="urgency" class="border p-2 rounded">
+                    <option value="1">Green Flag (Low Urgency)</option>
+                    <option value="2">Yellow Flag (Medium Urgency)</option>
+                    <option value="3">Red Flag (High Urgency)</option>
+                </select>
+                <button onclick="addTask()" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Add Task</button>
+            </div>
+        </div>
+
+        <!-- Task Table -->
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold mb-2">Tasks</h2>
+            <table class="w-full border-collapse border">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="border p-2">Task Name</th>
+                        <th class="border p-2">Importance</th>
+                        <th class="border p-2">Urgency</th>
+                    </tr>
+                </thead>
+                <tbody id="taskTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Chart -->
+        <div>
+            <h2 class="text-lg font-semibold mb-2">Task Priority Graph</h2>
+            <canvas id="taskChart" class="w-full h-96"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const tasks = [];
+        let chart;
+
+        // Initialize Chart.js
+        function initChart() {
+            const ctx = document.getElementById('taskChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Tasks',
+                        data: [],
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Urgency' },
+                            min: 0.5,
+                            max: 3.5,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    return { 1: 'Green', 2: 'Yellow', 3: 'Red' }[value] || '';
+                                }
+                            }
+                        },
+                        y: {
+                            title: { display: true, text: 'Importance' },
+                            min: 0.5,
+                            max: 3.5,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    return { 1: 'Green', 2: 'Yellow', 3: 'Red' }[value] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const task = tasks[context.dataIndex];
+                                    return `Task: ${task.name} (Urgency: ${task.urgencyLabel}, Importance: ${task.importanceLabel})`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Add Task
+        function addTask() {
+            const taskName = document.getElementById('taskName').value;
+            const importance = parseInt(document.getElementById('importance').value);
+            const urgency = parseInt(document.getElementById('urgency').value);
+
+            if (!taskName) {
+                alert('Please enter a task name');
+                return;
+            }
+
+            const importanceLabel = { 1: 'Green', 2: 'Yellow', 3: 'Red' }[importance];
+            const urgencyLabel = { 1: 'Green', 2: 'Yellow', 3: 'Red' }[urgency];
+
+            tasks.push({ name: taskName, importance, urgency, importanceLabel, urgencyLabel });
+            updateTable();
+            updateChart();
+
+            document.getElementById('taskName').value = '';
+        }
+
+        // Update Table
+        function updateTable() {
+            const tableBody = document.getElementById('taskTableBody');
+            tableBody.innerHTML = '';
+            tasks.forEach(task => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="border p-2">${task.name}</td>
+                    <td class="border p-2 ${task.importanceLabel.toLowerCase()}">${task.importanceLabel}</td>
+                    <td class="border p-2 ${task.urgencyLabel.toLowerCase()}">${task.urgencyLabel}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Update Chart
+        function updateChart() {
+            chart.data.datasets[0].data = tasks.map(task => ({
+                x: task.urgency,
+                y: task.importance,
+                name: task.name
+            }));
+            chart.update();
+        }
+
+        // CSS for flag colors
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .green { background-color: rgba(0, 255, 0, 0.2); }
+            .yellow { background-color: rgba(255, 255, 0, 0.2); }
+            .red { background-color: rgba(255, 0, 0, 0.2); }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize
+        initChart();
+    </script>
+</body>
+</html>
